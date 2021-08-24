@@ -721,8 +721,8 @@ void validate_detector(char *datacfg, char *cfgfile, char *weightfile, char *out
     int i = 0;
     int t;
 
-    float thresh = .001;
-    float nms = .6;
+    float thresh = .005;
+    float nms = .45;
 
     int nthreads = 4;
     if (m < 4) nthreads = m;

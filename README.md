@@ -1,147 +1,124 @@
-* 2021.3.21: 对模型结构进行细微调整优化，更新Yolo-Fastest-1.1模型
-* 2021.3.19: NCNN Camera Demo https://github.com/dog-qiuqiu/Yolo-Fastest/tree/master/sample/ncnn
-* 2021.3.16: 修复分组卷积在某些旧架构GPU推理耗时异常的问题
+# Yolo-Fastest person detection
+This repository contains the person detection settings of the Yolo-Fastest model on the [COCO dataset](https://cocodataset.org/#home). And demonstrate how to train on the darknet platform and export the weight to the TensorFlow Lite model. This model is referenced from [dog-qiuqiu/Yolo-Fastest](https://github.com/dog-qiuqiu/Yolo-Fastest).
 
-# :zap:Yolo-Fastest:zap:[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5131532.svg)](https://doi.org/10.5281/zenodo.5131532)
-* Simple, fast, compact, easy to transplant
-* A real-time target detection algorithm for all platforms
-* The fastest and smallest known universal target detection algorithm based on yolo
-* ***Optimized design for ARM mobile terminal, optimized to support [NCNN](https://github.com/Tencent/ncnn) reasoning framework***
-* Based on NCNN deployed on RK3399 ,Raspberry Pi 4b... and other embedded devices to achieve full real-time 30fps+
+## Prerequisites
+- Build tools and environment settings for the darknet platform.
+    - Please check [here](https://github.com/AlexeyAB/darknet#requirements-for-windows-linux-and-macos) to prepare the environment to build the darknet platform.
+- Tensorflow model convert tool and the post-training quantization tool for this example. 
+    - Please clone this [repository](https://github.com/HimaxWiseEyePlus/keras-YOLOv3-model-set) to get the tools already set up for this example. This tool is  referenced from [david8862/keras-YOLOv3-model-set](https://github.com/david8862/keras-YOLOv3-model-set).
+        ```bash
+        git clone https://github.com/HimaxWiseEyePlus/keras-YOLOv3-model-set
+        ```
+    - Please check [here](https://github.com/HimaxWiseEyePlus/keras-YOLOv3-model-set#quick-start) to prepare the environment to run the convert tool.
 
-![image](https://github.com/dog-qiuqiu/Yolo-Fastest/blob/master/data/fast.jpg)
-* ***中文介绍https://zhuanlan.zhihu.com/p/234506503*** 
-* ***相比AlexeyAB/darknet，此版本的darknet修复分组卷积在某些旧架构GPU推理耗时异常的问题(例如1050ti:40ms->4ms速度提升10倍)，强烈建议用此仓库框架训练模型***
-* ***Compared with AlexeyAB/darknet, this version of darknet fixes the problem of abnormal time-consuming inference of grouped convolution in some old architecture GPUs (for example, 1050ti:40ms->4ms speed up 10 times), it is strongly recommended to use this warehouse framework for training model***
-* ***Darknet CPU推理效率优化不好，不建议使用Darknet作为CPU端的推理框架，建议使用NCNN***
-* ***Darknet CPU reasoning efficiency optimization is not good, it is not recommended to use Darknet as the CPU side reasoning framework, it is recommended to use ncnn***
-* ***Based on pytorch training framework: https://github.com/dog-qiuqiu/yolov3***
+## Dataset and Annotation files
+- To get the COCO dataset can refer to [here](https://cocodataset.org/#download).
+- Please check [here](https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects) to setting the all the objects that darknet needs.
+- Change the data list file setting (`[train_coco.txt]` and `[test_coco.txt]`) at `ModelZoo/yolo-fastest-1.1_160_person/person.data`.
+    ```
+    classes= 1
+    train  = [train_coco.txt]
+    valid  = [test_coco.txt]
+    names = person.names
+    backup = model
+    eval=coco
+    ```
+- Change the mapping of the image path to the label path [here](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/blob/master/src/utils.c#L263).
+    ```c++
+    find_replace(input_path, "/images/train2017/", "/labels/train2017/", output_path);    // COCO
+    find_replace(output_path, "/images/val2017/", "/labels/val2017/", output_path);        // COCO
+    ```
+- `annotation_file`: Image path and ground truth that convert tools need. The file formate can refer to [here](https://github.com/HimaxWiseEyePlus/keras-YOLOv3-model-set#train). However, the ground truth label is not needed in the quantization stage or the prediction stage and can replace with `[train_coco.txt]` or `[test_coco.txt]` used by the darknet.
+- `instances_json_file`: Used by [pycocotools](https://github.com/cocodataset/cocoapi) when calculating AP50 score. Can download it in the Annotations section [here](https://cocodataset.org/#download).
 
-# Evaluating indicator/Benchmark
-Network|COCO mAP(0.5)|Resolution|Run Time(Ncnn 4xCore)|Run Time(Ncnn 1xCore)|FLOPS|Params|Weight size
-:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:
-[Yolo-Fastest-1.1](https://github.com/dog-qiuqiu/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_coco)|24.40 %|320X320|5.59 ms|7.52 ms|0.252BFlops|0.35M|1.4M
-[Yolo-Fastest-1.1-xl](https://github.com/dog-qiuqiu/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_coco)|34.33 %|320X320|9.27ms|15.72ms|0.725BFlops|0.925M|3.7M
-[Yolov3-Tiny-Prn](https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov3-tiny-prn.cfg)|33.1%|416X416|%ms|%ms|3.5BFlops|4.7M|18.8M
-[Yolov4-Tiny](https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov4-tiny.cfg)|40.2%|416X416|23.67ms|40.14ms|6.9 BFlops|5.77M|23.1M
-
-* ***Test platform Mi 11 Snapdragon 888 CPU，Based on [NCNN](https://github.com/Tencent/ncnn)***
-* COCO 2017 Val mAP（no group label）
-* Suitable for hardware with extremely tight computing resources
-* This model is recommended to do some simple single object detection suitable for simple application scenarios
-
-# Yolo-Fastest-1.1 Multi-platform benchmark
-Equipment|Computing backend|System|Framework|Run time
-:---:|:---:|:---:|:---:|:---:
-Mi 11|Snapdragon 888|Android(arm64)|ncnn|5.59ms
-Mate 30|Kirin 990|Android(arm64)|ncnn|6.12ms
-Meizu 16|Snapdragon 845|Android(arm64)|ncnn|7.72ms
-Development board|Snapdragon 835(Monkey version)|Android(arm64)|ncnn|20.52ms
-Development board|RK3399|Linux(arm64)|ncnn|35.04ms
-Raspberrypi 3B|4xCortex-A53|Linux(arm64)|ncnn|62.31ms
-Orangepi Zero Lts|H2+ 4xCortex-A7|Linux(armv7)|ncnn|550ms
-Nvidia|Gtx 1050ti|Ubuntu(x64)|darknet|4.73ms
-Intel|i7-8700|Ubuntu(x64)|ncnn|5.78ms
-* The above is a multi-core test benchmark
-* The above speed benchmark is tested by ***big core*** in big.little CPU
-* Raspberrypi 3B enable bf16s optimization，[Raspberrypi 64 Bit OS](http://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2020-08-24/)
-* [Rk3399 needs to lock the cpu to the highest frequency](http://blog.sina.com.cn/s/blog_15d5280590102yarw.html), ncnn and enable bf16s optimization
-
-# Pascal VOC performance index comparison
-Network|Model Size|mAP(VOC 2007)|FLOPS
-:---:|:---:|:---:|:---:
-Tiny YOLOv2|60.5MB|57.1%|6.97BFlops
-Tiny YOLOv3|33.4MB|58.4%|5.52BFlops
-YOLO Nano|4.0MB|69.1%|4.51Bflops
-MobileNetv2-SSD-Lite|13.8MB|68.6%|&Bflops
-MobileNetV2-YOLOv3|11.52MB|70.20%|2.02Bflos
-Pelee-SSD|21.68MB|70.09%|2.40Bflos
-***Yolo Fastest***|1.3MB|61.02%|0.23Bflops
-***Yolo Fastest-XL***|3.5MB|69.43%|0.70Bflops
-***MobileNetv2-Yolo-Lite***|8.0MB|73.26%|1.80Bflops
-* Performance indicators reference from the papers and public indicators in the github project
-* MobileNetv2-Yolo-Lite: https://github.com/dog-qiuqiu/MobileNet-Yolo#mobilenetv2-yolov3-litenano-darknet
-
-# Yolo-Fastest-1.1 Pedestrian detection
-Equipment|System|Framework|Run time
-:---:|:---:|:---:|:---:
-Raspberrypi 3B|Linux(arm64)|ncnn|62ms
-* Simple real-time pedestrian detection model based on yolo-fastest-1.1
-* Enable bf16s optimization，[Raspberrypi 64 Bit OS](http://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2020-08-24/)
-
-## Demo
-![image](https://github.com/dog-qiuqiu/Yolo-Fastest/blob/master/data/p1.jpg)
-![image](https://github.com/dog-qiuqiu/Yolo-Fastest/blob/master/data/p2.jpg)
-
-# Compile 
-## How to compile on Linux
-* This repo is based on Darknet project so the instructions for compiling the project are same
-(https://github.com/MuhammadAsadJaved/darknet#how-to-compile-on-windows-legacy-way)
-
-
-Just do `make` in the Yolo-Fastest-master directory. Before make, you can set such options in the `Makefile`: [link](https://github.com/dog-qiuqiu/Yolo-Fastest/blob/master/Makefile#L1)
-
-* `GPU=1` to build with CUDA to accelerate by using GPU (CUDA should be in `/usr/local/cuda`)
-* `CUDNN=1` to build with cuDNN v5-v7 to accelerate training by using GPU (cuDNN should be in `/usr/local/cudnn`)
-* `CUDNN_HALF=1` to build for Tensor Cores (on Titan V / Tesla V100 / DGX-2 and later) speedup Detection 3x, Training 2x
-* `OPENCV=1` to build with OpenCV 4.x/3.x/2.4.x - allows to detect on video files and video streams from network cameras or web-cams
-* Set the other options in the `Makefile` according to your need.
-
-# Test/Demo
-*Run Yolo-Fastest , Yolo-Fastest-xl  , Yolov3 or Yolov4 on image or video inputs
-## Demo on image input
-*Note: change  .data , .cfg , .weights and input image file in `image_yolov3.sh` for Yolo-Fastest-x1, Yolov3 and Yolov4
-
+## Build
+To set up other build settings of the darknet platform, please refer to [here](https://github.com/AlexeyAB/darknet#how-to-compile-on-linux-using-make).
+```bash
+make
 ```
-  sh image_yolov3.sh
-```
-## Demo on video input
-*Note: Use any input video and place in the `data` folder or use `0` in the `video_yolov3.sh` for webcam
 
-*Note: change  .data , .cfg , .weights and input video file in `video_yolov3.sh` for Yolo-Fastest-x1, Yolov3 and Yolov4
+## Train Yolo-Fastest person detection model on COCO dataset
 
+To Train Yolo-Fastest 160*160 resolution person detection model on COCO dataset:
+```bash
+cd ModelZoo/yolo-fastest-1.1_160_person/
+../../darknet detector train person.data yolo-fastest-1.1_160_person.cfg
 ```
-  sh video_yolov3.sh
-```
-## Yolo-Fastest Test
-![image](https://github.com/dog-qiuqiu/Yolo-Fastest/blob/master/data/predictions_2.png)
 
-## Yolo-Fastest-xl Test
-![image](https://github.com/dog-qiuqiu/Yolo-Fastest/blob/master/data/projections.jpg)
+After the training progress, the weight file will be at `ModelZoo/yolo-fastest-1.1_160_person/model`. Our training results and other information for this model show in the table below.
+Network| COCO 2017 Val person AP(0.5) |Resolution|FLOPS|Params|Weight size
+:---:|:---:|:---:|:---:|:---:|:---:
+[Yolo-Fastest-1.1_160_person](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person)|35.3 %|160*160|0.054BFlops|0.29M|1.15M|
 
-# How to Train
-## Generate a pre-trained model for the initialization of the model backbone
-```
-  ./darknet partial yolo-fastest.cfg yolo-fastest.weights yolo-fastest.conv.109 109
-```
-## Train
-* 交流qq群:1062122604
-* https://github.com/AlexeyAB/darknet
-```
-  ./darknet detector train voc.data yolo-fastest.cfg yolo-fastest.conv.109 
-```
-# Deploy
-## NCNN
-### NCNN Conversion Tutorial
-* Benchmark:https://github.com/Tencent/ncnn/tree/master/benchmark
-* NCNN supports direct conversion of darknet models
-* darknet2ncnn: https://github.com/Tencent/ncnn/tree/master/tools/darknet
-### NCNN Sample
-* CamSample:https://github.com/dog-qiuqiu/Yolo-Fastest/tree/master/sample/ncnn
-* AndroidSample: https://github.com/WZTENG/YOLOv5_NCNN
-## MNN&TNN&MNN
-* https://github.com/dog-qiuqiu/MobileNet-Yolo#darknet2caffe-tutorial
-* ***Based on MNN: https://github.com/geekzhu001/Yolo-Fastest-MNN Run on : raspberry pi 4B 2G Input size : 320*320 Average inference time : 0.035s*** 
-## ONNX&TensorRT
-* https://github.com/CaoWGG/TensorRT-YOLOv4
-* It is not efficient to run on Psacal and earlier GPU architectures. It is not recommended to deploy on such devices such as jeston nano(17ms/img), Tx1, Tx2, but there is no such problem in Turing GPU, such as jetson-Xavier-NX Can run efficiently
-## OpenCV DNN
-* https://blog.csdn.net/nihate/article/details/108670542
-# Thanks
-* https://github.com/AlexeyAB/darknet
-* https://github.com/Tencent/ncnn
 
-## Cite as
-dog-qiuqiu. (2021, July 24). dog-qiuqiu/Yolo-Fastest: 
-yolo-fastest-v1.1.0 (Version v.1.1.0). Zenodo. 
-http://doi.org/10.5281/zenodo.5131532
+
+## Convert weight to tensorflow
+To convert the darknet weight to TensorFlow `.h5` file:
+```bash
+python keras-YOLOv3-model-set/tools/model_converter/fastest_1.1_160/convert.py \
+--config_path ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1.1_160_person.cfg \
+--output_path  ModelZoo/yolo-fastest-1.1_160_person/model/yolo-fastest-1.1_160_person.h5 \
+--weights_path ModelZoo/yolo-fastest-1.1_160_person/model/yolo-fastest-1_final.weights
+...
+Saved Keras model to ModelZoo/yolo-fastest-1.1_160_person/model/yolo-fastest-1.1_160_person.h5
+Read 294252 of 294252.0 from Darknet weights.
+```
+After the convert progress, the `.h5` file will be at `ModelZoo/yolo-fastest-1.1_160_person/model/yolo-fastest-1.1_160_person.h5`.
+
+## Post-training quantization and Evaluation 
+To run the int8 quantization and output the `.tflite` model:
+```bash
+python keras-YOLOv3-model-set/tools/model_converter/fastest_1.1_160/post_train_quant_convert_demo.py \
+--keras_model_file ModelZoo/yolo-fastest-1.1_160_person/model/yolo-fastest-1.1_160_person.h5 \
+--output_file  ModelZoo/yolo-fastest-1.1_160_person/model/yolo-fastest-1.1_160_person.tflite \
+--annotation_file [annotation_file or train_coco.txt]
+```
+
+After the quantize progress, the `.tflite` file will be at `ModelZoo/yolo-fastest-1.1_160_person/model/yolo-fastest-1.1_160_person.tflite`.
+
+To evaluate the tflite model with `pycocotools`:
+```bash
+python keras-YOLOv3-model-set/eval_yolo_fastest_160_1ch_tflite.py \
+--model_path ModelZoo/yolo-fastest-1.1_160_person/model/yolo-fastest-1.1_160_person.tflite \
+--anchors_path ModelZoo/yolo-fastest-1.1_160_person/anchors.txt \
+--classes_path ModelZoo/yolo-fastest-1.1_160_person/person.names \
+--json_name yolo-fastest-1.1_160_person.json \
+--annotation_file [annotation_file or test_coco.txt]
+
+Eval model: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5000/5000 [03:00<00:00, 27.66it/s]
+The json result saved successfully.
+
+python pycooc_person.py \
+--res_path keras-YOLOv3-model-set/coco_results/yolo-fastest-1.1_160_person.json \
+--instances_json_file [instances_json_file]
+
+loading annotations into memory...
+Done (t=0.41s)
+creating index...
+index created!
+Loading and preparing results...
+DONE (t=0.97s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=13.08s).
+Accumulating evaluation results...
+DONE (t=0.97s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.140
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.347
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.091
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.013
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.134
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.343
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.093
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.192
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.228
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.030
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.255
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.501
+```
+The bounding box result will be at `keras-YOLOv3-model-set/coco_results/yolo-fastest-1.1_160_person.json`. The results of our evaluation of the quantized model show in the table below.
+Network|COCO 2017 Val person AP(0.5)|
+:---:|:---:
+Yolo-Fastest-1.1_160_person int8|34.7 %|
