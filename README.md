@@ -12,7 +12,7 @@ This repository contains the person detection settings of the Yolo-Fastest model
     - Please check [here](https://github.com/HimaxWiseEyePlus/keras-YOLOv3-model-set#quick-start) to prepare the environment to run the convert tool.
 
 ## Dataset and Annotation files
-- To get the COCO dataset can refer to [here](https://cocodataset.org/#download).
+- To get the COCO 2017 dataset can refer to [COCO 2017 train images dataset](http://images.cocodataset.org/zips/train2017.zip) and [COCO 2017 val images dataset](http://images.cocodataset.org/zips/val2017.zip).
 - Please check [here](https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects) to setting the all the objects that darknet needs.
 - Change the data list file setting (`[train_coco.txt]` and `[test_coco.txt]`) at `ModelZoo/yolo-fastest-1.1_160_person/person.data`.
     ```
@@ -29,7 +29,7 @@ This repository contains the person detection settings of the Yolo-Fastest model
     find_replace(output_path, "/images/val2017/", "/labels/val2017/", output_path);        // COCO
     ```
 - `annotation_file`: Image path and ground truth that convert tools need. The file formate can refer to [here](https://github.com/HimaxWiseEyePlus/keras-YOLOv3-model-set#train). However, the ground truth label is not needed in the quantization stage or the prediction stage and can replace with `[train_coco.txt]` or `[test_coco.txt]` used by the darknet.
-- `instances_json_file`: Used by [pycocotools](https://github.com/cocodataset/cocoapi) when calculating AP50 score. Can download it in the Annotations section [here](https://cocodataset.org/#download).
+- `instances_json_file`: Used by [pycocotools](https://github.com/cocodataset/cocoapi) when calculating AP50 score. The COCO 2017 annotations can download from [here](http://images.cocodataset.org/annotations/annotations_trainval2017.zip).
 
 ## Build
 To set up other build settings of the darknet platform, please refer to [here](https://github.com/AlexeyAB/darknet#how-to-compile-on-linux-using-make).
@@ -87,32 +87,33 @@ python keras-YOLOv3-model-set/eval_yolo_fastest_160_1ch_tflite.py \
 
 Eval model: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5000/5000 [03:00<00:00, 27.66it/s]
 The json result saved successfully.
-
+```
+```bash
 python pycooc_person.py \
 --res_path keras-YOLOv3-model-set/coco_results/yolo-fastest-1.1_160_person.json \
 --instances_json_file [instances_json_file]
 
 loading annotations into memory...
-Done (t=0.41s)
+Done (t=0.47s)
 creating index...
 index created!
 Loading and preparing results...
-DONE (t=0.97s)
+DONE (t=0.98s)
 creating index...
 index created!
 Running per image evaluation...
 Evaluate annotation type *bbox*
-DONE (t=13.08s).
+DONE (t=14.29s).
 Accumulating evaluation results...
-DONE (t=0.97s).
+DONE (t=1.01s).
  Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.140
- Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.347
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.348
  Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.091
  Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.013
  Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.134
  Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.343
  Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.093
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.192
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.193
  Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.228
  Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.030
  Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.255
@@ -121,4 +122,4 @@ DONE (t=0.97s).
 The bounding box result will be at `keras-YOLOv3-model-set/coco_results/yolo-fastest-1.1_160_person.json`. The results of our evaluation of the quantized model show in the table below.
 Network|COCO 2017 Val person AP(0.5)|
 :---:|:---:
-Yolo-Fastest-1.1_160_person int8|34.7 %|
+[Yolo-Fastest-1.1_160_person int8](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1.1_160_person.tflite)|34.8 %|
