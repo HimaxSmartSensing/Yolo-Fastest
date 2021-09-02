@@ -46,9 +46,10 @@ cd ModelZoo/yolo-fastest-1.1_160_person/
 ```
 
 After the training progress, the weight file will be at `ModelZoo/yolo-fastest-1.1_160_person/model`. Our training results and other information for this model show in the table below.
-Network| COCO 2017 Val person AP(0.5) |Resolution|FLOPS|Params|Weight size
-:---:|:---:|:---:|:---:|:---:|:---:
-[Yolo-Fastest-1.1_160_person](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person)|35.3 %|160*160|0.054BFlops|0.29M|1.15M|
+
+|Network| COCO 2017 Val person AP(0.5) |Resolution|FLOPS|Params|Weight size|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|[Yolo-Fastest-1.1_160_person](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person)|35.3 %|160*160|0.054BFlops|0.29M|1.15M|
 
 
 
@@ -120,6 +121,7 @@ DONE (t=1.01s).
  Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.501
 ```
 The bounding box result will be at `keras-YOLOv3-model-set/coco_results/yolo-fastest-1.1_160_person.json`. The results of our evaluation of the quantized model show in the table below.
-Network|COCO 2017 Val person AP(0.5)|
-:---:|:---:
-[Yolo-Fastest-1.1_160_person int8](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1.1_160_person.tflite)|34.8 %|
+
+|Network|COCO 2017 Val person AP(0.5)|
+:---:|:---:|
+|[Yolo-Fastest-1.1_160_person int8](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1.1_160_person.tflite)|34.8 %|
