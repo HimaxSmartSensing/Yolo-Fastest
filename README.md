@@ -125,3 +125,9 @@ The bounding box result will be at `keras-YOLOv3-model-set/coco_results/yolo-fas
 |Network|COCO 2017 Val person AP(0.5)|
 :---:|:---:|
 |[Yolo-Fastest-1.1_160_person int8](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1.1_160_person.tflite)|34.8 %|
+
+
+## Thanks
+- https://github.com/AlexeyAB/darknet
+- https://github.com/dog-qiuqiu/Yolo-Fastest
+- https://github.com/david8862/keras-YOLOv3-model-set
