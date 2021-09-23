@@ -13,8 +13,29 @@ This repository contains the person detection settings of the Yolo-Fastest model
 
 ## Dataset and Annotation files
 - To get the COCO 2017 dataset can refer to [COCO 2017 train images dataset](http://images.cocodataset.org/zips/train2017.zip) and [COCO 2017 val images dataset](http://images.cocodataset.org/zips/val2017.zip).
-- Please check [here](https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects) to setting the all the objects that darknet needs.
-- Change the data list file setting (`[train_coco.txt]` and `[test_coco.txt]`) at `ModelZoo/yolo-fastest-1.1_160_person/person.data`.
+- `instances_json_file`: Used by [pycocotools](https://github.com/cocodataset/cocoapi) when calculating AP50 score. The COCO 2017 annotations can download from [here](http://images.cocodataset.org/annotations/annotations_trainval2017.zip).
+- Please check [here](https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects) to setting the all the objects that darknet needs. In this example, some settings have been prepared in advance, only need to prepare the following items:
+    - Create file `[train_coco.txt]` and `[test_coco.txt]`, with the file path of your training images and validation images. For example:
+        ```
+        /images/train2017/000000337711.jpg
+        /images/train2017/000000300758.jpg
+        /images/train2017/000000494434.jpg
+        ...
+        ```
+    - Create a `.txt` file for each `.jpg` image file in the same directory and with the same name to the image file. The file contains the object number and the object coordinates on this image, for each object in a new line:
+        ```
+        <object-class> <x_center> <y_center> <width> <height>
+        ```
+        Where:
+        - `<object-class>` - integer object number from 0 to (classes-1), in this example only use 0 for person label.
+        - `<x_center> <y_center> <width> <height>` - float values relative to width and height of image, it can be equal from (0.0 to 1.0]
+        - Example:
+            ```
+            0 0.686445 0.53196 0.0828906 0.323967
+            0 0.612484 0.446197 0.023625 0.0838967
+            ```
+
+- Change the data list file path setting (`[train_coco.txt]` and `[test_coco.txt]`) at `ModelZoo/yolo-fastest-1.1_160_person/person.data`.
     ```
     classes= 1
     train  = [train_coco.txt]
@@ -29,7 +50,7 @@ This repository contains the person detection settings of the Yolo-Fastest model
     find_replace(output_path, "/images/val2017/", "/labels/val2017/", output_path);        // COCO
     ```
 - `annotation_file`: Image path and ground truth that convert tools need. The file formate can refer to [here](https://github.com/HimaxWiseEyePlus/keras-YOLOv3-model-set#train). However, the ground truth label is not needed in the quantization stage or the prediction stage and can replace with `[train_coco.txt]` or `[test_coco.txt]` used by the darknet.
-- `instances_json_file`: Used by [pycocotools](https://github.com/cocodataset/cocoapi) when calculating AP50 score. The COCO 2017 annotations can download from [here](http://images.cocodataset.org/annotations/annotations_trainval2017.zip).
+
 
 ## Build
 To set up other build settings of the darknet platform, please refer to [here](https://github.com/AlexeyAB/darknet#how-to-compile-on-linux-using-make).
@@ -126,6 +147,13 @@ The bounding box result will be at `keras-YOLOv3-model-set/coco_results/yolo-fas
 :---:|:---:|
 |[Yolo-Fastest-1.1_160_person int8](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1.1_160_person.tflite)|34.8 %|
 
+
+## Himax pretrained model
+For the tinyML model, if the training dataset is collected from the hardware used by the deployment target and the collecting scenarios are consistent with the usage scenarios. The model trained with these data can usually have better accuracy when running on the deployment target.
+To this end, we collected approximately 180,000 pictures of himax office scenes using himax cameras. Training on this example model and take 20% of the data for validation. The `.tflite` file and the validation results of this model show in the following table:
+|Network|Validation AP(0.5)|
+:---:|:---:|
+|[Yolo-Fastest-1.1_160_person_himax int8](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1.1_160_person_himax.tflite)|89.2 %|
 
 ## Thanks
 - https://github.com/AlexeyAB/darknet
