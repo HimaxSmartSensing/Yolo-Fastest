@@ -153,7 +153,7 @@ For the tinyML model, if the training dataset is collected from the hardware use
 To this end, we collected approximately 180,000 pictures of himax office scenes using himax cameras. Training on this example model and take 20% of the data for validation. The `.tflite` file and the validation results of this model show in the following table:
 |Network|Validation AP(0.5)|
 :---:|:---:|
-|[Yolo-Fastest-1.1_160_person_himax int8](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1.1_160_person_himax.tflite)|89.2 %|
+|[Yolo-Fastest-1.1_160_person_himax int8](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1_1_160_person_himax.tflite)|89.2 %|
 
 ## Thanks
 - https://github.com/AlexeyAB/darknet
