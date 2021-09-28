@@ -34,6 +34,20 @@ This repository contains the person detection settings of the Yolo-Fastest model
             0 0.686445 0.53196 0.0828906 0.323967
             0 0.612484 0.446197 0.023625 0.0838967
             ```
+    We have a modified version of the  [ultralytics/JSON2YOLO](https://github.com/ultralytics/JSON2YOLO) in this repository.(Modify to be used for the person detection task) Can use this tool to convert the COCO `instances_json_file` JSON into darknet format:
+    ```bash 
+    # Python 3.8 or later
+    pip install -r ./JSON2YOLO/requirements.txt
+    python JSON2YOLO/general_json2yolo.py \
+    --instances_path [instances_json_file directory] \
+    --train_path [training dataset directory] \
+    --val_path [val dataset directory]
+
+    Annotations annotations/instances_train2017.json: 100%|█████████████████████████████████████████████████| 860001/860001 [43:02<00:00, 333.05it/s]
+    Annotations annotations/instances_val2017.json: 100%|█████████████████████████████████████████████████████| 36781/36781 [01:38<00:00, 372.40it/s]
+    Labels path: new_dir/labels
+    Data list files: new_dir/train_coco.txt, new_dir/test_coco.txt
+    ```
 
 - Change the data list file path setting (`[train_coco.txt]` and `[test_coco.txt]`) at `ModelZoo/yolo-fastest-1.1_160_person/person.data`.
     ```
@@ -113,7 +127,7 @@ The json result saved successfully.
 ```bash
 python pycooc_person.py \
 --res_path keras-YOLOv3-model-set/coco_results/yolo-fastest-1.1_160_person.json \
---instances_json_file [instances_json_file]
+--instances_json_file [val_instances_json_file]
 
 loading annotations into memory...
 Done (t=0.47s)
@@ -159,3 +173,4 @@ To this end, we collected approximately 180,000 pictures of himax office scenes 
 - https://github.com/AlexeyAB/darknet
 - https://github.com/dog-qiuqiu/Yolo-Fastest
 - https://github.com/david8862/keras-YOLOv3-model-set
+- https://github.com/ultralytics/JSON2YOLO

@@ -1,0 +1,6 @@
+[submodule "JSON2YOLO"]
+	path = JSON2YOLO
+	url = https://github.com/HimaxWiseEyePlus/JSON2YOLO.git
+[submodule "keras-YOLOv3-model-set"]
+	path = keras-YOLOv3-model-set
+	url = https://github.com/HimaxWiseEyePlus/keras-YOLOv3-model-set
