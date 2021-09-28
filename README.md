@@ -5,11 +5,7 @@ This repository contains the person detection settings of the Yolo-Fastest model
 - Build tools and environment settings for the darknet platform.
     - Please check [here](https://github.com/AlexeyAB/darknet#requirements-for-windows-linux-and-macos) to prepare the environment to build the darknet platform.
 - Tensorflow model convert tool and the post-training quantization tool for this example. 
-    - Please clone this [repository](https://github.com/HimaxWiseEyePlus/keras-YOLOv3-model-set) to get the tools already set up for this example. This tool is  referenced from [david8862/keras-YOLOv3-model-set](https://github.com/david8862/keras-YOLOv3-model-set).
-        ```bash
-        git clone https://github.com/HimaxWiseEyePlus/keras-YOLOv3-model-set
-        ```
-    - Please check [here](https://github.com/HimaxWiseEyePlus/keras-YOLOv3-model-set#quick-start) to prepare the environment to run the convert tool.
+    - Please check [here](https://github.com/HimaxWiseEyePlus/keras-YOLOv3-model-set#quick-start) to prepare the environment to run the convert tool. This tool is referenced from [david8862/keras-YOLOv3-model-set](https://github.com/david8862/keras-YOLOv3-model-set).
 
 ## Dataset and Annotation files
 - To get the COCO 2017 dataset can refer to [COCO 2017 train images dataset](http://images.cocodataset.org/zips/train2017.zip) and [COCO 2017 val images dataset](http://images.cocodataset.org/zips/val2017.zip).
