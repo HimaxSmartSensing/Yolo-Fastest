@@ -2,6 +2,8 @@
 This repository contains the person detection settings of the Yolo-Fastest model on the [COCO dataset](https://cocodataset.org/#home). And demonstrate how to train on the darknet platform and export the weight to the TensorFlow Lite model. This model is referenced from [dog-qiuqiu/Yolo-Fastest](https://github.com/dog-qiuqiu/Yolo-Fastest).
 
 ## Prerequisites
+- Python==3.8.5
+- tensorflow==2.4.0
 - Build tools and environment settings for the darknet platform.
     - Please check [here](https://github.com/AlexeyAB/darknet#requirements-for-windows-linux-and-macos) to prepare the environment to build the darknet platform.
 - Tensorflow model convert tool and the post-training quantization tool for this example. 
