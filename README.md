@@ -167,6 +167,9 @@ To this end, we collected approximately 180,000 pictures of himax office scenes 
 :---:|:---:|
 |[Yolo-Fastest-1.1_160_person_himax int8](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1_1_160_person_himax.tflite)|89.2 %|
 
+## Himax pretrained weights
+We also provide the weights file [here](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1_1_160_person_himax.weights) for users to fine-tune.
+
 ## Thanks
 - https://github.com/AlexeyAB/darknet
 - https://github.com/dog-qiuqiu/Yolo-Fastest
