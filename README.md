@@ -7,7 +7,7 @@ This repository contains the person detection settings of the Yolo-Fastest model
 - Build tools and environment settings for the darknet platform.
     - Please check [here](https://github.com/AlexeyAB/darknet#requirements-for-windows-linux-and-macos) to prepare the environment to build the darknet platform.
 - Tensorflow model convert tool and the post-training quantization tool for this example. 
-    - Please check [here](https://github.com/HimaxWiseEyePlus/keras-YOLOv3-model-set#quick-start) to prepare the environment to run the convert tool. This tool is referenced from [david8862/keras-YOLOv3-model-set](https://github.com/david8862/keras-YOLOv3-model-set).
+    - Please check [here](https://github.com/HimaxSmartSensing/keras-YOLOv3-model-set#quick-start) to prepare the environment to run the convert tool. This tool is referenced from [david8862/keras-YOLOv3-model-set](https://github.com/david8862/keras-YOLOv3-model-set).
 
 ## Dataset and Annotation files
 - To get the COCO 2017 dataset can refer to [COCO 2017 train images dataset](http://images.cocodataset.org/zips/train2017.zip) and [COCO 2017 val images dataset](http://images.cocodataset.org/zips/val2017.zip).
@@ -56,12 +56,12 @@ This repository contains the person detection settings of the Yolo-Fastest model
     backup = model
     eval=coco
     ```
-- Change the mapping of the image path to the label path [here](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/blob/master/src/utils.c#L263).
+- Change the mapping of the image path to the label path [here](https://github.com/HimaxSmartSensing/Yolo-Fastest/blob/master/src/utils.c#L263).
     ```c++
     find_replace(input_path, "/images/train2017/", "/labels/train2017/", output_path);    // COCO
     find_replace(output_path, "/images/val2017/", "/labels/val2017/", output_path);        // COCO
     ```
-- `annotation_file`: Image path and ground truth that convert tools need. The file formate can refer to [here](https://github.com/HimaxWiseEyePlus/keras-YOLOv3-model-set#train). However, the ground truth label is not needed in the quantization stage or the prediction stage and can replace with `[train_coco.txt]` or `[test_coco.txt]` used by the darknet.
+- `annotation_file`: Image path and ground truth that convert tools need. The file formate can refer to [here](https://github.com/HimaxSmartSensing/keras-YOLOv3-model-set#train). However, the ground truth label is not needed in the quantization stage or the prediction stage and can replace with `[train_coco.txt]` or `[test_coco.txt]` used by the darknet.
 
 
 ## Build
@@ -82,7 +82,7 @@ After the training progress, the weight file will be at `ModelZoo/yolo-fastest-1
 
 |Network| COCO 2017 Val person AP(0.5) |Resolution|FLOPS|Params|Weight size|
 |:---:|:---:|:---:|:---:|:---:|:---:|
-|[Yolo-Fastest-1.1_160_person](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person)|35.3 %|160*160|0.054BFlops|0.29M|1.15M|
+|[Yolo-Fastest-1.1_160_person](https://github.com/HimaxSmartSensing/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person)|35.3 %|160*160|0.054BFlops|0.29M|1.15M|
 
 
 
@@ -157,7 +157,7 @@ The bounding box result will be at `keras-YOLOv3-model-set/coco_results/yolo-fas
 
 |Network|COCO 2017 Val person AP(0.5)|
 :---:|:---:|
-|[Yolo-Fastest-1.1_160_person int8](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1.1_160_person.tflite)|34.8 %|
+|[Yolo-Fastest-1.1_160_person int8](https://github.com/HimaxSmartSensing/Yolo-Fastest/blob/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1.1_160_person.tflite)|34.8 %|
 
 
 ## Himax pretrained model
@@ -165,10 +165,10 @@ For the tinyML model, if the training dataset is collected from the hardware use
 To this end, we collected approximately 180,000 pictures of himax office scenes using himax cameras. Training on this example model and take 20% of the data for validation. The `.tflite` file and the validation results of this model show in the following table:
 |Network|Validation AP(0.5)|
 :---:|:---:|
-|[Yolo-Fastest-1.1_160_person_himax int8](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1_1_160_person_himax.tflite)|89.2 %|
+|[Yolo-Fastest-1.1_160_person_himax int8](https://github.com/HimaxSmartSensing/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1_1_160_person_himax.tflite)|89.2 %|
 
 ## Himax pretrained weights
-We also provide the weights file [here](https://github.com/HimaxWiseEyePlus/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1_1_160_person_himax.weights) for users to fine-tune.
+We also provide the weights file [here](https://github.com/HimaxSmartSensing/Yolo-Fastest/tree/master/ModelZoo/yolo-fastest-1.1_160_person/yolo-fastest-1_1_160_person_himax.weights) for users to fine-tune.
 
 ## Thanks
 - https://github.com/AlexeyAB/darknet
